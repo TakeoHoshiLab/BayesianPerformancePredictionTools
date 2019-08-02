@@ -72,10 +72,10 @@ def main(l, y_range):
         return locals()
 
     split_start = 0
-    n_split = 15 #教師データの数（n_split個目までを教師データとして学習）
+    n_split = 25 #教師データの数（n_split個目までを教師データとして学習）
     n_split_true = 5
 
-    x_true = copy.deepcopy(dict_value['node'][split_start:n_split_true])
+    x_true = copy.deepcopy(dict_value['node'][split_start:n_split_true] + dict_value['node'][25:27]) # dict_value['node'][26:28] : data_x -> 4096, 8192 
     x_hpc = [128., 256., 512., 1024., 2048., 4096., 8192.]
     node = np.log(dict_value['node'][split_start:n_split])
 
@@ -84,7 +84,12 @@ def main(l, y_range):
     print("routine_list:",routine_list)
     for i in routine_list:
         print(i, dict_value[i][split_start:n_split])
-        y_true = copy.deepcopy(dict_value[i][split_start:n_split_true])
+        y_true = copy.deepcopy(dict_value[i][split_start:n_split_true] + dict_value[i][25:27]) # dict_value[i][26:28] : data_y -> 4096, 8192
+        y_true_pass02 = copy.deepcopy(dict_value[i][n_split_true:n_split_true+5] + dict_value[i][27:29]) # dict_value[i][26:28] : data_y -> 4096, 8192
+        y_true_pass03 = copy.deepcopy(dict_value[i][n_split_true+5:n_split_true+10] + dict_value[i][29:31]) # dict_value[i][26:28] : data_y -> 4096, 8192
+        y_true_pass04 = copy.deepcopy(dict_value[i][n_split_true+10:n_split_true+15] + dict_value[i][31:33]) # dict_value[i][26:28] : data_y -> 4096, 8192
+        y_true_pass05 = copy.deepcopy(dict_value[i][n_split_true+15:n_split_true+20] + dict_value[i][33:35]) # dict_value[i][26:28] : data_y -> 4096, 8192
+        print "y_true= ", y_true
         time = copy.deepcopy(dict_value[i][split_start:n_split])
         time = np.log(time)
 
@@ -234,15 +239,20 @@ def main(l, y_range):
         #---------------------------------------------------------------------------------------------------------------------#
         plotting(plt, './%s/graph.png' % i, i, '(%s)' % i, x_true, [min(y_pre_min), max(y_pre_max)], x_hpc)
         f2 = open('./%s/text.txt' % i,'w')
-        f2.write("#x_true y_true y_pre y_95%HPD_min y_95%HPD_max")
+        f2.write("#x_true y_true_pass01 y_true_pass02 y_true_pass03 y_true_pass04 y_true_pass05 y_pre y_95%HPD_min y_95%HPD_max")
         f2.write("\n")
         for k in range(len(x_hpc)):
             f2.write(str(x_hpc[k]))
             f2.write(" ")
-            if k < (int(len(x_hpc)) - (int(len(x_hpc)) - int(len(x_true)))):
-                f2.write(str(y_true[k]))
-            else:
-                f2.write("0")
+            f2.write(str(y_true[k]))
+            f2.write(" ")
+            f2.write(str(y_true_pass02[k]))
+            f2.write(" ")
+            f2.write(str(y_true_pass03[k]))
+            f2.write(" ")
+            f2.write(str(y_true_pass04[k]))
+            f2.write(" ")
+            f2.write(str(y_true_pass05[k]))
             f2.write(" ")
             f2.write(str(y_pre[k]))
             f2.write(" ")
